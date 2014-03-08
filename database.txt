@@ -1,0 +1,10 @@
+after you have a root user 
+
+use these following lines
+
+create database dbName
+create user "user"@"host(usually localhost)" identified by "password"
+grant create, drop, alter, delete, index, insert, select, update on *.* to "user"
+
+this will create a database by dbName, a user with username "user" with password "password" and give them the basic premissions.
+
