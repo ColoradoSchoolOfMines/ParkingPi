@@ -13,13 +13,24 @@ and does a post to a specific webpage
 returns the page for debuging and user convience
 	
 """
-def doPost(carCount, sensorID, battery):
-	carCount = [("%s" % (sensorID), "%s" % (carCount)),("%s" %(sensorID), "%s" % (battery))]
-	encodedData = urllib.urlencode(carCount)
-	path = "http://parking.mines.edu/index.php" #TODO make real webpage
-	request = urllib2.Request(path, encodedData)
-	request.add_header("Content-type", "application/x-www-form-urlencoded") #TODO may need to modify header
-	page = urllib2.urlopen(request)
+
+"""
+Temperature and pointWindow default to None so legacy code works
+"""
+def doPost(sensorID, carCount,  battery, temperature=None, window=None):
+	dataWindow = ""
+	
+	data = [("%s" % (sensorID), "%s" % (carCount)),("%s" %(sensorID), "%s" % (battery)), ("%s" %(sensorID), "%s" %(temperature))] #make the key value pairs. 
+	for point in window:
+		dataPoints = point.split(',')
+		data.append(("%s" % (sensorID), "%s" % (dataPoints[0])))
+		data.append(("%s" % (sensorID), "%s" % (dataPoints[1])))
+		data.append(("%s" % (sensorID), "%s" % (dataPoints[2])))
+	encodedData = urllib.urlencode(data) #encode the data
+	path = "http://acmxlabs.org/parking" #go to the acmxlabs website
+	request = urllib2.Request(path, encodedData) # send request
+	request.add_header("Content-type", "application/x-www-form-urlencoded") #add headers
+	page = urllib2.urlopen(request) #get the page
 
 	return page
 

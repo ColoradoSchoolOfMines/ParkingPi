@@ -39,13 +39,23 @@ def message_received(data):
 		id = ord(idstr[0]) * 256 + ord(idstr[1])
 
 		valuesplit = values.split()
-		#convert batterylevel, temperature and carcount into numbers, batterylevel in percentage
+		#convert batterylevel, temperature and carcount into numbers, batterylevel in percentage and grab window of points associated to car detection
 		carcount = int(valuesplit[0])
 		battery = int((float(valuesplit[1])-2.7)/(4.23-2.7)*100)
 		temperature = float(valuesplit[2])
+		#depending on how we send them from the sensor, this should grab all the points in the window, even if we don't know its length
+		pointWindow = valuesplit[3:]#should grab the rest of the values and store them as the window 
+
+		window = []
+		for point in pointWindow:
+			values = point.split(',')
+			x = int(values[0])
+			y = int(values[1])
+			z = int(values[2])
+			window.append("%s %s %s" %(x, y, z))
 
 		#submit everything
-		update.doPost(id, carcount, battery)
+		update.doPost(id, carcount, battery, temperature, window)
 
 	except Exception as e:
 		#the last steps will fail for messages such as on calibration, we need to catch this
