@@ -24,42 +24,40 @@ ser = serial.Serial(PORT, BAUD_RATE)
 
 def message_received(data):
 	print data
-	try :
-		datadict=data
+	window = []
+	carcount = None
+	while window == [] or carcount == None: #keep listening until you have the local count, volt, temp, and the window
+		try :
+			datadict=data
+			
+			#get field containing voltagelevel, temperature and carcount
+			values = datadict["rf_data"]
+
+			#remove dangerous characters
+			values = values.replace("\r", "")
+			values = values.replace("\n", "")
+
+			#grab id, it's given as a raw binary number
+			idstr = datadict["source_addr"]
+			id = ord(idstr[0]) * 256 + ord(idstr[1])
+
+			valuesplit = values.split()
+			if valuesplit[0] != 'w': #if the first character isn't the identifier char, then were collecting the local count, voltage, and temperature
+				carcount = int(valuesplit[0])
+				voltage = float(valuesplit[1])
+				temperature = float(valuesplit[2])
+			else: #the data were getting is window data	
+				for i in range(1, len(valuesplit)):
+					window.append(float(valuesplit[i]))
+					
+
+
+		except Exception as e:
+			#the last steps will fail for messages such as on calibration, we need to catch this
+			pass
 		
-		#get field containing batterylevel, temperature and carcount
-		values = datadict["rf_data"]
-
-		#remove dangerous characters
-		values = values.replace("\r", "")
-		values = values.replace("\n", "")
-
-		#grab id, it's given as a raw binary number
-		idstr = datadict["source_addr"]
-		id = ord(idstr[0]) * 256 + ord(idstr[1])
-
-		valuesplit = values.split()
-		#convert batterylevel, temperature and carcount into numbers, batterylevel in percentage and grab window of points associated to car detection
-		carcount = int(valuesplit[0])
-		battery = int((float(valuesplit[1])-2.7)/(4.23-2.7)*100)
-		temperature = float(valuesplit[2])
-		#depending on how we send them from the sensor, this should grab all the points in the window, even if we don't know its length
-		pointWindow = valuesplit[3:]#should grab the rest of the values and store them as the window 
-
-		window = []
-		for point in pointWindow:
-			values = point.split(',')
-			x = int(values[0])
-			y = int(values[1])
-			z = int(values[2])
-			window.append("%s %s %s" %(x, y, z))
-
-		#submit everything
-		update.doPost(id, carcount, battery, temperature, window)
-
-	except Exception as e:
-		#the last steps will fail for messages such as on calibration, we need to catch this
-		pass
+	#submit everything
+	update.doPost(id, carcount, voltage, temperature, window)
     
 
 # Create API object, which spawns a new thread
