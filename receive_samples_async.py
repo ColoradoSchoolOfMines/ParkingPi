@@ -19,7 +19,7 @@ import update
 #PORT = '/dev/tty.usbserial-FTFOHO9D'
 PORT = '/dev/ttyUSB0'
 BAUD_RATE = 57600
-STORAGE = {} #stores the data until it gets its paired data
+SENSORBUFFER = {} #stores the data until it gets its paired data
 
 # Open serial port
 ser = serial.Serial(PORT, BAUD_RATE)
@@ -54,17 +54,17 @@ def message_received(data):
 		idstr = datadict["source_addr"]
 		#get the id, and make sure that there are 
 		id = ord(idstr[0]) * 256 + ord(idstr[1])
-		if id in STORAGE: #case where were still recieving data
+		if id in SENSORBUFFER: #case where were still recieving data
 			if values.find("[") != -1: #there is a segment to ignore
 				None
 			elif values.find(">") == -1: #not the end of data stream
-				STORAGE[id] += values
+				SENSORBUFFER[id] += values
 			else:
-				STORAGE[id] += values
-				parseDataAndSend(id, STORAGE[id])
-				del STORAGE[id]
-		else: #new data recived for an id not in STORAGE
-			STORAGE[id] = values
+				SENSORBUFFER[id] += values
+				parseDataAndSend(id, SENSORBUFFER[id])
+				del SENSORBUFFER[id]
+		else: #new data recived for an id not in SENSORBUFFER
+			SENSORBUFFER[id] = values
 			
 	except Exception as e:
 		#the last steps will fail for messages such as on calibration, we need to catch this
@@ -134,32 +134,32 @@ def message_received(data):
 	#submit everything
 	update.doPost(id, carcount, voltage, temperature, window)
 """
-#		if id in STORAGE: #if the id is in STORAGE
-#			if STORAGE[id] == None: #this is an extreme edge case, the id should never be added unless there was data before
+#		if id in SENSORBUFFER: #if the id is in SENSORBUFFER
+#			if SENSORBUFFER[id] == None: #this is an extreme edge case, the id should never be added unless there was data before
 #				if valuesplit[0] != 'w': #if the first character isn't the identifier char, then were collecting the local count, voltage, and temperature
 #					point = DataStream()
 #					point.carcount = int(valuesplit[0])
 #					point.voltage = float(valuesplit[1])
 #					point.temperature = float(valuesplit[2])
-#					STORAGE[id] = point
+#					SENSORBUFFER[id] = point
 #				else: #the data were getting is window data	
 #					point = DataStream()
 #					for i in range(1, len(valuesplit)):
 #						point.window.append(float(valuesplit[i]))
-#					STORAGE[id] = point
-#			elif STORAGE[id].carcount == None and STORAGE[id].window != []: #case where window data somehow arrived before the actual data
-#				STORAGE[id].carcount = int(valuesplit[0])
-#				STORAGE[id].voltage = float(valuesplit[1])
-#				STORAGE[id].temperature = float(valuesplit[2])
-#				update.doPost(id, STORAGE[id].carcount, STORAGE[id].voltage, STORAGE[id].temperature, STORAGE[id].window)
-#				del STORAGE[id]
-#			elif STORAGE[id].carcount != None and STORAGE[id].window == []: #case where window data arrived later(most likely case)
+#					SENSORBUFFER[id] = point
+#			elif SENSORBUFFER[id].carcount == None and SENSORBUFFER[id].window != []: #case where window data somehow arrived before the actual data
+#				SENSORBUFFER[id].carcount = int(valuesplit[0])
+#				SENSORBUFFER[id].voltage = float(valuesplit[1])
+#				SENSORBUFFER[id].temperature = float(valuesplit[2])
+#				update.doPost(id, SENSORBUFFER[id].carcount, SENSORBUFFER[id].voltage, SENSORBUFFER[id].temperature, SENSORBUFFER[id].window)
+#				del SENSORBUFFER[id]
+#			elif SENSORBUFFER[id].carcount != None and SENSORBUFFER[id].window == []: #case where window data arrived later(most likely case)
 #				for i in range(1, len(valuesplit)):
-#					STORAGE[id].window.append(float(valuesplit[i]))
-#				update.doPost(id, STORAGE[id].carcount, STORAGE[id].voltage, STORAGE[id].temperature, STORAGE[id].window)
-#				del STORAGE[id]
+#					SENSORBUFFER[id].window.append(float(valuesplit[i]))
+#				update.doPost(id, SENSORBUFFER[id].carcount, SENSORBUFFER[id].voltage, SENSORBUFFER[id].temperature, SENSORBUFFER[id].window)
+#				del SENSORBUFFER[id]
 #
-#		else: #the id is not in STORAGE, so we have to create it
+#		else: #the id is not in SENSORBUFFER, so we have to create it
 #			point = DataStream()
 #			if valuesplit[0] != 'w': #if the first character isn't the identifier char, then were collecting the local count, voltage, and temperature
 #				point.carcount = int(valuesplit[0])
@@ -168,4 +168,4 @@ def message_received(data):
 #			else: #the data were getting is window data	
 #				for i in range(1, len(valuesplit)):
 #					point.window.append(float(valuesplit[i]))
-#			STORAGE[id] = point
+#			SENSORBUFFER[id] = point
