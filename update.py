@@ -22,10 +22,7 @@ def doPost(sensorID, carCount,  battery, temperature=None, window=None):
 	
 	data = [("%s" % (sensorID), "%s" % (carCount)),("%s" %(sensorID), "%s" % (battery)), ("%s" %(sensorID), "%s" %(temperature))] #make the key value pairs. 
 	for point in window:
-		dataPoints = point.split(',')
-		data.append(("%s" % (sensorID), "%s" % (dataPoints[0])))
-		data.append(("%s" % (sensorID), "%s" % (dataPoints[1])))
-		data.append(("%s" % (sensorID), "%s" % (dataPoints[2])))
+		data.append(("%s" %(sensorID), "%s" % (point)))
 	encodedData = urllib.urlencode(data) #encode the data
 	path = "http://acmxlabs.org/parking" #go to the acmxlabs website
 	request = urllib2.Request(path, encodedData) # send request
