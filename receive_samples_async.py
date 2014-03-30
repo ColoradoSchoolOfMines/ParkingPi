@@ -55,7 +55,9 @@ def message_received(data):
 		#get the id, and make sure that there are 
 		id = ord(idstr[0]) * 256 + ord(idstr[1])
 		if id in STORAGE: #case where were still recieving data
-			if values.find(">") == -1: #not the end of data stream
+			if values.find("[") != -1: #there is a segment to ignore
+				None
+			elif values.find(">") == -1: #not the end of data stream
 				STORAGE[id] += values
 			else:
 				STORAGE[id] += values
