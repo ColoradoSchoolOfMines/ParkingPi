@@ -19,9 +19,9 @@ Temperature and pointWindow default to None so legacy code works
 def doPostFio(sensorID, carcount,  battery, temperature=None, window=None):
 	dataWindow = ""
 	
-	data = [("id", sensorID), ("carcount", carcount), ("voltage", battery), ("temperature", temperature), ("window", window)]
+	data = [("username", "a"), ("password", "b"), ("id", sensorID), ("carcount", carcount), ("voltage", battery), ("temperature", temperature), ("window", window)]
 	encodedData = urllib.urlencode(data) #encode the data
-	path = "http://acmxlabs.org/arduinodata" #go to the acmxlabs website
+	path = "http://acmxlabs.org/smartlots/fiodata" #go to the acmxlabs website
 	request = urllib2.Request(path, encodedData) # send request
 	request.add_header("Content-type", "application/x-www-form-urlencoded") #add headers
 	page = urllib2.urlopen(request) #get the page

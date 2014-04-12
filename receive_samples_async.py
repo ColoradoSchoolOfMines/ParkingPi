@@ -10,9 +10,9 @@ This example reads the serial port and asynchronously processes IO data
 received from a remote XBee.
 """
 
-from xbee import XBee
+#from xbee import XBee
 import time
-import serial
+#import serial
 import update
 
 
@@ -22,7 +22,7 @@ BAUD_RATE = 57600
 SENSORBUFFER = {} #stores the data until it gets its paired data
 
 # Open serial port
-ser = serial.Serial(PORT, BAUD_RATE)
+#ser = serial.Serial(PORT, BAUD_RATE)
 
 
 def parseDataAndSend(id, dataStream):
@@ -95,22 +95,25 @@ def message_received(data):
 		pass
 	
 
+testDataStream = "<27 4.7 50 10.1 10.2 10.3 10.4 10.5 10.6 10.7 10.8 10.9>"
+parseDataAndSend(7, testDataStream)
+
     
 
 # Create API object, which spawns a new thread
-xbee = XBee(ser, callback=message_received)
+#xbee = XBee(ser, callback=message_received)
 
 # Do other stuff in the main thread
-while True:
-    try:
-        time.sleep(.1)
-    except KeyboardInterrupt:
-        break
+#while True:
+#    try:
+#        time.sleep(.1)
+#    except KeyboardInterrupt:
+#        break
 
 # halt() must be called before closing the serial
 # port in order to ensure proper thread shutdown
-xbee.halt()
-ser.close()
+#xbee.halt()
+#ser.close()
 
 """
 
