@@ -35,7 +35,7 @@ def parseDataAndSend(id, dataStream):
 	voltage = valuesplit[1]
 	temperature = valuesplit[2]
 	window = valuesplit[3:]
-	update.doPost(id, carcount, voltage, temperature, window)
+	update.doPostFio(id, carcount, voltage, temperature, window)
 
 
 def message_received(data):
@@ -94,6 +94,7 @@ def message_received(data):
 		#the last steps will fail for messages such as on calibration, we need to catch this
 		pass
 	
+
     
 
 # Create API object, which spawns a new thread

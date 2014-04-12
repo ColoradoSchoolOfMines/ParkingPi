@@ -16,12 +16,12 @@ returns the page for debuging and user convience
 """
 Temperature and pointWindow default to None so legacy code works
 """
-def doPost(sensorID, carcount,  battery, temperature=None, window=None):
+def doPostFio(sensorID, carcount,  battery, temperature=None, window=None):
 	dataWindow = ""
 	
 	data = [("id", sensorID), ("carcount", carcount), ("voltage", battery), ("temperature", temperature), ("window", window)]
 	encodedData = urllib.urlencode(data) #encode the data
-	path = "http://acmxlabs.org/parking" #go to the acmxlabs website
+	path = "http://acmxlabs.org/arduinodata" #go to the acmxlabs website
 	request = urllib2.Request(path, encodedData) # send request
 	request.add_header("Content-type", "application/x-www-form-urlencoded") #add headers
 	page = urllib2.urlopen(request) #get the page
