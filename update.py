@@ -4,6 +4,7 @@ Python script for the pi backend to curl post website after getting data xbee
 
 import urllib2
 import urllib
+import hashlib
 #import xbee
 #import serial
 
@@ -17,9 +18,9 @@ returns the page for debuging and user convience
 Temperature and pointWindow default to None so legacy code works
 """
 def doPostFio(sensorID, carcount,  battery, temperature=None, window=None):
-	dataWindow = ""
-	
-	data = [("username", "a"), ("password", "b"), ("id", sensorID), ("carcount", carcount), ("voltage", battery), ("temperature", temperature), ("window", window)]
+	password = hashlib.md5()
+	password.update("raspberryp1")
+	data = [("username", "wsn"), ("password", "raspberryp1"), ("id", sensorID), ("carcount", carcount), ("voltage", battery), ("temperature", temperature), ("window", window)]
 	encodedData = urllib.urlencode(data) #encode the data
 	path = "http://acmxlabs.org/smartlots/fiodata" #go to the acmxlabs website
 	request = urllib2.Request(path, encodedData) # send request
