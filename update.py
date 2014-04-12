@@ -16,17 +16,17 @@ returns the page for debuging and user convience
 """
 Temperature and pointWindow default to None so legacy code works
 """
-def doPost(sensorID, carCount,  battery, temperature=None, window=None):
+def doPost(sensorID, carcount,  battery, temperature=None, window=None):
 	dataWindow = ""
 	
-	data = [("%s" % (sensorID), "%s" % (carCount)),("%s" %(sensorID), "%s" % (battery)), ("%s" %(sensorID), "%s" %(temperature))] #make the key value pairs. 
-	for point in window:
-		data.append(("%s" %(sensorID), "%s" % (point)))
+	data = [("id", sensorID), ("carcount", carcount), ("voltage", battery), ("temperature", temperature), ("window", window)]
 	encodedData = urllib.urlencode(data) #encode the data
 	path = "http://acmxlabs.org/parking" #go to the acmxlabs website
 	request = urllib2.Request(path, encodedData) # send request
 	request.add_header("Content-type", "application/x-www-form-urlencoded") #add headers
 	page = urllib2.urlopen(request) #get the page
+
+	print page.read()
 
 	return page
 
