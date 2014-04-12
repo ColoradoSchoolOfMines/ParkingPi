@@ -1,12 +1,4 @@
 #!/usr/bin/env python
-""" 
-Turns out that the xbee data frames can only feasibly be sent if you also use a python module to send them, and since the aurdino does not use python, it would be a lot of work to 'pretend' to be sending it from the python library
-xbee data frame only created from python xbee library
-"""
-#dummy dictonaries, replace these with actual data on deploy
-idToLot = {'0':'lowerCTLM', '1':'lowerCTLM', '2':'upperCTLM', '3':'upperCTLM', '4':'oLot'}
-idToCar = {'0':23, '1':-5, '2':56, '3':20, '4':15}
-lotToCar= {'lowerCTLM':18, 'upperCTLM':76, 'oLot':15}
 import serial, time, datetime, sys, dataChecker, update, updateLocal
 #from xbee import XBee
 
@@ -61,23 +53,5 @@ def parseData(data):
 	for key,value in idToLot.items():
 		if value == parkingLot:
 			lotToCar[value] += idToCar[key]
-"""		
-for key,value in lotToCar.items():
-	print "%s %i" % (key, value)
-print "\n"
-parseData('1:23')
-for key,value in lotToCar.items():
-	print"%s %i" % (key, value)	
-parseData('1:-5')
-
-for key,value in lotToCar.items():
-	print"%s %i" % (key, value)	
-print "\n"
-parseData('4:32')
-for key,value in lotToCar.items():
-	print"%s %i" % (key, value)	
-
-
-"""
 print "about to read"
 readFromSerial(serial_port)

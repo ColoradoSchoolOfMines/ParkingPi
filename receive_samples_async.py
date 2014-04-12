@@ -39,6 +39,30 @@ def parseDataAndSend(id, dataStream):
 
 
 def message_received(data):
+
+	"""
+	Since XBee's will split the data along frames, we only want to send data to website once we have all the data
+	To solve this, each data stream will end with a specific char, in this case it is '>'. 
+	data streams will be 
+	
+		header_data < localcount voltage temperature window_data window_data window_data ... window_data >
+
+	Occasionally debug statements will be sent. all debugs will be surronded by square brackets  [ ] 
+	Debug statements will be only a single xbee frame, and no data statments will be in the same window as a debug statment
+	therefore all debug statments will be ignored can simply have the entire stream thrown out
+	debug statments will be
+
+		header_data [ DEBUG_STATEMENT ... DEBUG_STATEMENT ]
+	
+	Because the entire data stream will not exist in a single XBee frame, when the id is extracted from the header,
+	the stream will be added to a map. If there is already an id in the map, it will append the current frame into the data
+	already in the dictonary
+	When the terminating character is found (the > char) it will append the current frame to the one in the map and 
+	then send the data in the map. The id will be removed from the map when the data is sent to site. 
+
+	The name of the map is SENSORBUFFER and exists in global scope.
+
+	"""
 	print data
 	try :
 		datadict=data
@@ -52,11 +76,11 @@ def message_received(data):
 
 		#grab id, it's given as a raw binary number
 		idstr = datadict["source_addr"]
-		#get the id, and make sure that there are 
+		#get the id, and make sure that there is data to grab
 		id = ord(idstr[0]) * 256 + ord(idstr[1])
 		if id in SENSORBUFFER: #case where were still recieving data
 			if values.find("[") != -1: #there is a segment to ignore
-				None
+				None #entire stream is debug, no data to get
 			elif values.find(">") == -1: #not the end of data stream
 				SENSORBUFFER[id] += values
 			else:

@@ -8,8 +8,7 @@ import urllib
 #import serial
 
 """
-doPost takes a int or string representing the carcount recived from the xbee, and a arduino id
-and does a post to a specific webpage
+doPost will take the data from recieve_asnycrounous_data and send the data to the website. It will encode for post.
 returns the page for debuging and user convience
 	
 """
