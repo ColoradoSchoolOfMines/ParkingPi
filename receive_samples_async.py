@@ -25,7 +25,7 @@ SENSORBUFFER = {} #stores the data until it gets its paired data
 #ser = serial.Serial(PORT, BAUD_RATE)
 
 
-def parseDataAndSend(id, dataStream):
+def parseFioDataAndSend(id, dataStream):
 	#get the < and > out of datastream
 	dataStream = dataStream.replace("<", "")
 	dataStream = dataStream.replace(">", "")
@@ -35,8 +35,14 @@ def parseDataAndSend(id, dataStream):
 	voltage = valuesplit[1]
 	temperature = valuesplit[2]
 	window = valuesplit[3:]
-	update.doPostFio(id, carcount, voltage, temperature, window)
+	update.postFioData(id, carcount, voltage, temperature, window)
 
+def parsePiDataAndSend(id, dataStream):
+	#get the < and > out of datastream
+	dataStream = dataStream.replace("<", "")
+	dataStream = dataStream.replace(">", "")
+
+	update.postPiData(id, dataStream)
 
 def message_received(data):
 
@@ -63,7 +69,7 @@ def message_received(data):
 	The name of the map is SENSORBUFFER and exists in global scope.
 
 	"""
-	print data
+	#print data
 	try :
 		datadict=data
 		
@@ -85,7 +91,7 @@ def message_received(data):
 				SENSORBUFFER[id] += values
 			else:
 				SENSORBUFFER[id] += values
-				parseDataAndSend(id, SENSORBUFFER[id])
+				parseFioDataAndSend(id, SENSORBUFFER[id])
 				del SENSORBUFFER[id]
 		else: #new data recived for an id not in SENSORBUFFER
 			SENSORBUFFER[id] = values
@@ -96,7 +102,10 @@ def message_received(data):
 	
 
 testDataStream = "<27 4.7 50 10.1 10.2 10.3 10.4 10.5 10.6 10.7 10.8 10.9>"
-parseDataAndSend(7, testDataStream)
+#parseFioDataAndSend(7, testDataStream)
+
+testPiStream = "<101100011>"
+parsePiDataAndSend(21, testPiStream)
 
     
 
