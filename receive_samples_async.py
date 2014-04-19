@@ -102,7 +102,7 @@ def message_received(data):
 	
 
 testDataStream = "<27 4.7 50 10.1 10.2 10.3 10.4 10.5 10.6 10.7 10.8 10.9>"
-#parseFioDataAndSend(7, testDataStream)
+parseFioDataAndSend(7, testDataStream)
 
 testPiStream = "<101100011>"
 parsePiDataAndSend(21, testPiStream)
