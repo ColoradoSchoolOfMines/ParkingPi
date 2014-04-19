@@ -26,7 +26,11 @@ def postFioData(sensorID, carcount,  battery, temperature=None, window=None):
 	request.add_header("Content-type", "application/x-www-form-urlencoded") 
 	
 	# Send request
-	page = urllib2.urlopen(request) 
+	page = urllib2.urlopen(request)
+
+	print page.read()
+
+	return page 
 
 
 # Posts the data from the image acquisition Pis to the acmx server
