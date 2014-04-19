@@ -16,18 +16,52 @@ returns the page for debuging and user convience
 """
 Temperature and pointWindow default to None so legacy code works
 """
-def doPost(sensorID, carcount,  battery, temperature=None, window=None):
+def postFioData(sensorID, carcount,  battery, temperature=None, window=None):
 	dataWindow = ""
 	
+	# Create data array
 	data = [("id", sensorID), ("carcount", carcount), ("voltage", battery), ("temperature", temperature), ("window", window)]
-	encodedData = urllib.urlencode(data) #encode the data
-	path = "http://acmxlabs.org/parking" #go to the acmxlabs website
-	request = urllib2.Request(path, encodedData) # send request
-	request.add_header("Content-type", "application/x-www-form-urlencoded") #add headers
-	page = urllib2.urlopen(request) #get the page
+	
+	# Encode the data
+	encodedData = urllib.urlencode(data)
+
+	# HTTP url
+	path = "http://acmxlabs.org/smartlots/fiodata" 
+
+	# Create request
+	request = urllib2.Request(path, encodedData)
+
+	# Add headers
+	request.add_header("Content-type", "application/x-www-form-urlencoded") 
+	
+	# Send request
+	page = urllib2.urlopen(request) 
 
 	print page.read()
 
 	return page
 
+def postPiData(sensorID, image):
+
+	# Create data array
+	data = [("id", sensorID)]
+
+	# Encode the data
+	encodedData = urllib.urlencode(data)
+
+	# HTTP url
+	path = "http://acmxlabs.org/smartlots/pidata"
+
+	# Create request
+	request = urllib2.Request(path, encodedData)
+
+	# Add headers
+	request.add_header("Content-type", "application/x-www-form-urlencoded")
+
+	# Send request
+	page = urllib2.urlopen(request)
+
+	print page.read()
+
+	return page
 
