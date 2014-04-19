@@ -1,26 +1,17 @@
-"""
-Python script for the pi backend to curl post website after getting data xbee
-"""
+# Python script for the pi backend to post to website after getting XBee Data
 
 import urllib2
 import urllib
-#import xbee
-#import serial
+import hashlib
 
-"""
-doPost will take the data from recieve_asnycrounous_data and send the data to the website. It will encode for post.
-returns the page for debuging and user convience
-	
-"""
+# Temperature and pointWindow default to None so legacy code works
 
-"""
-Temperature and pointWindow default to None so legacy code works
-"""
+# Posts the data from the fio magnetometer sensors to the acmx server
 def postFioData(sensorID, carcount,  battery, temperature=None, window=None):
 	dataWindow = ""
 	
 	# Create data array
-	data = [("id", sensorID), ("carcount", carcount), ("voltage", battery), ("temperature", temperature), ("window", window)]
+	data = [("username", "wsn"), ("password", "raspberryp1"), ("id", sensorID), ("carcount", carcount), ("voltage", battery), ("temperature", temperature), ("window", window)]
 	
 	# Encode the data
 	encodedData = urllib.urlencode(data)
@@ -37,14 +28,12 @@ def postFioData(sensorID, carcount,  battery, temperature=None, window=None):
 	# Send request
 	page = urllib2.urlopen(request) 
 
-	print page.read()
 
-	return page
-
+# Posts the data from the image acquisition Pis to the acmx server
 def postPiData(sensorID, image):
 
 	# Create data array
-	data = [("id", sensorID)]
+	data = [("username", "wsn"), ("password", "raspberryp1"), ("id", sensorID)]
 
 	# Encode the data
 	encodedData = urllib.urlencode(data)
