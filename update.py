@@ -1,10 +1,6 @@
 # Python script for the pi backend to post to website after getting XBee Data
 
-import urllib2
-import urllib
-import hashlib
 import requests
-
 
 # This method will post data from the Fio magnetometer to the ACMx server.
 # It uses the 'requests' module for Multipart-Encoding of the image file. See 
