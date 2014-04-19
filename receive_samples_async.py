@@ -42,6 +42,8 @@ def parsePiDataAndSend(id, dataStream):
 	dataStream = dataStream.replace("<", "")
 	dataStream = dataStream.replace(">", "")
 
+	
+	
 	update.postPiData(id, dataStream)
 
 def message_received(data):
