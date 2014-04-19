@@ -15,7 +15,6 @@ import time
 #import serial
 import update
 
-
 #PORT = '/dev/tty.usbserial-FTFOHO9D'
 PORT = '/dev/ttyUSB0'
 BAUD_RATE = 57600
@@ -45,6 +44,10 @@ def parsePiDataAndSend(id, dataStream):
 	
 	
 	update.postPiData(id, dataStream)
+	
+def testParser(id, dataStream):
+	f = open("kitten.png", "rb")
+	update.postPiData(id, f)
 
 def message_received(data):
 
@@ -71,7 +74,7 @@ def message_received(data):
 	The name of the map is SENSORBUFFER and exists in global scope.
 
 	"""
-	#print data
+	print data
 	try :
 		datadict=data
 		
@@ -104,12 +107,13 @@ def message_received(data):
 	
 
 testDataStream = "<27 4.7 50 10.1 10.2 10.3 10.4 10.5 10.6 10.7 10.8 10.9>"
-parseFioDataAndSend(7, testDataStream)
+#parseFioDataAndSend(7, testDataStream)
 
 testPiStream = "<101100011>"
-parsePiDataAndSend(21, testPiStream)
+#parsePiDataAndSend(21, testPiStream)
 
-    
+testParser(27, 1)
+
 
 # Create API object, which spawns a new thread
 #xbee = XBee(ser, callback=message_received)
