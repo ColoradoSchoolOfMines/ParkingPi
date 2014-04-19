@@ -3,7 +3,7 @@
 import requests
 
 # This method will post data from the Fio magnetometer to the ACMx server.
-# It uses the 'requests' module for Multipart-Encoding of the image file. See 
+# It uses the 'requests' module for encoding of the form fields. See 
 # http://docs.python-requests.org/ for documentation. Prints server response
 # to the console.
 # 
