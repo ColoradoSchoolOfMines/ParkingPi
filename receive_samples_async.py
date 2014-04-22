@@ -37,15 +37,6 @@ def parseFioDataAndSend(id, dataStream):
 	update.postFioData(id, carcount, voltage, temperature, window)
 
 def parsePiDataAndSend(id, dataStream):
-	#get the < and > out of datastream
-	dataStream = dataStream.replace("<", "")
-	dataStream = dataStream.replace(">", "")
-
-	
-	
-	update.postPiData(id, dataStream)
-	
-def testParser(id, dataStream):
 	f = open("kitten.png", "rb")
 	update.postPiData(id, f)
 
@@ -106,14 +97,11 @@ def message_received(data):
 		pass
 	
 
-testDataStream = "<27 4.7 50 10.1 10.2 10.3 10.4 10.5 10.6 10.7 10.8 10.9>"
-#parseFioDataAndSend(7, testDataStream)
+testDataStream = "<37 4.7 50 10.1 10.2 10.3 10.4 10.5 10.6 10.7 10.8 10.9>"
+parseFioDataAndSend(7, testDataStream)
 
 testPiStream = "<101100011>"
-#parsePiDataAndSend(21, testPiStream)
-
-testParser(27, 1)
-
+parsePiDataAndSend(21, testPiStream)
 
 # Create API object, which spawns a new thread
 #xbee = XBee(ser, callback=message_received)
