@@ -47,7 +47,7 @@ def parseFioDataAndSend(sensorId, dataStream):
 
 # Takes a data stream from a Pi and sends it to the server for storage
 def parsePiDataAndSend(sensorId, dataStream):
-	f = open("kitten.png", "rb")
+	f = open("kitten.jpeg", "rb")
 	update.postPiData(sensorId, f)
 
 """
