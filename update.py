@@ -20,7 +20,14 @@ import requests
 def postFioData(sensorID, carcount,  battery, temperature=None, window=None):
 	
 	url = "http://acmxlabs.org/smartlots/fiodata" 
-	
+	#since requests won't send an array, we need to convert array to single string
+	windowDataAsSingleString = ""
+	for entry in window:
+		windowDataAsSingleString += entry
+		windowDataAsSingleString += " "
+
+	#remove trailing space, this saves a byte on every xbee transimission
+	windowDataAsSingleString = windowDataAsSingleString[:-1] 
 	# Construct normal form variables payload.
 	dPayload = {
 			"username": "wsn", 
@@ -29,7 +36,7 @@ def postFioData(sensorID, carcount,  battery, temperature=None, window=None):
 			"carcount": carcount, 
 			"voltage": battery, 
 			"temperature": temperature,
-			"window": window
+			"window": windowDataAsSingleString
 	}
 	
 	# Create a requests object to handle all the urllib2 stuff.
@@ -65,7 +72,6 @@ def postPiData(sensorID, image):
 			"password": "raspberryp1", 
 			"id": sensorID
 	}
-	
 	# Create a requests object to handle all the urllib2 stuff.
 	r = requests.post(url, data=dPayload, files=fPayload)
 	
