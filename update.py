@@ -19,7 +19,7 @@ import requests
 # 
 def postFioData(sensorID, carcount,  battery, temperature=None, window=None):
 	
-	url = "http://acmxlabs.org/smartlots/fiodata" 
+	url = "http://wsn:raspberryp1@acmxlabs.org/smartlots/fiodata" 
 	#since requests won't send an array, we need to convert array to single string
 	windowDataAsSingleString = ""
 	for entry in window:
@@ -61,7 +61,7 @@ def postFioData(sensorID, carcount,  battery, temperature=None, window=None):
 # 
 def postPiData(sensorID, image):
 	
-	url = "http://acmxlabs.org/smartlots/pidata"
+	url = "http://wsn:raspberryp1@acmxlabs.org/smartlots/pidata"
 	
 	# Construct the file payload.
 	fPayload = {"image": image}
