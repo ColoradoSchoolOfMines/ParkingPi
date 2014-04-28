@@ -30,11 +30,9 @@ def postFioData(sensorID, carcount,  battery, temperature=None, window=None):
 	windowDataAsSingleString = windowDataAsSingleString[:-1] 
 	# Construct normal form variables payload.
 	dPayload = {
-			"username": "wsn", 
-			"password": "raspberryp1", 
 			"id": sensorID,
-			"carcount": carcount, 
-			"voltage": battery, 
+			"carcount": carcount,
+			"voltage": battery,
 			"temperature": temperature,
 			"window": windowDataAsSingleString
 	}
@@ -68,8 +66,6 @@ def postPiData(sensorID, image):
 	
 	# Construct normal form variables payload.
 	dPayload = {
-			"username": "wsn", 
-			"password": "raspberryp1", 
 			"id": sensorID
 	}
 	# Create a requests object to handle all the urllib2 stuff.
