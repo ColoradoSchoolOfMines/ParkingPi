@@ -201,7 +201,7 @@ testDataStream = "<200 4.7 50 10.1 10.2 10.3 10.4 10.5 10.6 10.7 10.8 10.9>"
 parseFioDataAndSend(7, testDataStream)
 
 testPiStream = "102400 as;ofijw9r8uapw9erjas jdfzsdjf jawli,,.fhxfglq8uw3498ysf#R$**9hdfsaehrksdf;sfawr68569#$("
-parsePiDataAndSend(21, testPiStream)
+parsePiDataAndSend(3, testPiStream)
 
 # Create API object, which spawns a new thread
 # xbee = XBee(ser, callback=message_received)
