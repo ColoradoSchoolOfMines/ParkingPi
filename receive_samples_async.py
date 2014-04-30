@@ -30,7 +30,7 @@ PI_DATA_BUFFER = {}
 PI_STREAM_LENGTHS = {}
 
 # Open serial port
-#ser = serial.Serial(PORT, BAUD_RATE)
+ser = serial.Serial(PORT, BAUD_RATE)
 
 # Takes a data stream from a Fio and sends it to the server for storage
 def parseFioDataAndSend(sensorId, dataStream):
@@ -197,23 +197,23 @@ def hackyMethodToIdentifyData(sensorPayload):
 	else:
 		return "pi"
 
-testDataStream = "<200 4.7 50 10.1 10.2 10.3 10.4 10.5 10.6 10.7 10.8 10.9>"
-parseFioDataAndSend(7, testDataStream)
+# testDataStream = "<200 4.7 50 10.1 10.2 10.3 10.4 10.5 10.6 10.7 10.8 10.9>"
+# parseFioDataAndSend(7, testDataStream)
 
-testPiStream = "102400 as;ofijw9r8uapw9erjas jdfzsdjf jawli,,.fhxfglq8uw3498ysf#R$**9hdfsaehrksdf;sfawr68569#$("
-parsePiDataAndSend(3, testPiStream)
+# testPiStream = "102400 as;ofijw9r8uapw9erjas jdfzsdjf jawli,,.fhxfglq8uw3498ysf#R$**9hdfsaehrksdf;sfawr68569#$("
+# parsePiDataAndSend(3, testPiStream)
 
 # Create API object, which spawns a new thread
-# xbee = XBee(ser, callback=message_received)
+xbee = XBee(ser, callback=message_received)
 
 # Do other stuff in the main thread
-# while True:
-#    try:
-#        time.sleep(.1)
-#    except KeyboardInterrupt:
-#        break
+while True:
+   try:
+       time.sleep(.1)
+   except KeyboardInterrupt:
+       break
 
 # halt() must be called before closing the serial
 # port in order to ensure proper thread shutdown
-# xbee.halt()
-# ser.close()
+xbee.halt()
+ser.close()
