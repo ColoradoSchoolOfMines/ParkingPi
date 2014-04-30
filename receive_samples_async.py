@@ -206,6 +206,8 @@ def hackyMethodToIdentifyData(sensorPayload):
 # Create API object, which spawns a new thread
 xbee = XBee(ser, callback=message_received)
 
+print "Listening for input on serial port " + PORT
+
 # Do other stuff in the main thread
 while True:
    try:
