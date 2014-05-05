@@ -15,7 +15,7 @@ import time
 import serial
 import update
 
-PORT = '/dev/ttyUSB0'
+PORT = '/dev/tty.usbserial-A602TT7M'
 BAUD_RATE = 57600
 
 # A dictionary (map) that stores the Fio packets, with each packet 
@@ -75,6 +75,7 @@ The name of the map is FIO_DATA_BUFFER and exists in global scope.
 """
 
 def message_received(dataPacket):
+	print "Got a data packet"
 
 	print dataPacket
 	try :
