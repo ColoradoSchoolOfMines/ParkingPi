@@ -15,7 +15,7 @@ import time
 import serial
 import update
 
-PORT = '/dev/tty.usbserial-A602TT7M'
+PORT = '/dev/ttyUSB0'
 BAUD_RATE = 57600
 
 # A dictionary (map) that stores the Fio packets, with each packet 
@@ -34,6 +34,7 @@ ser = serial.Serial(PORT, BAUD_RATE)
 
 # Takes a data stream from a Fio and sends it to the server for storage
 def parseFioDataAndSend(sensorId, dataStream):
+	print "Parsing Fio Data"
 	# Remove the < and > from of datastream
 	dataStream = dataStream.replace("<", "")
 	dataStream = dataStream.replace(">", "")
@@ -44,6 +45,7 @@ def parseFioDataAndSend(sensorId, dataStream):
 	temperature = valuesplit[2]
 	window = valuesplit[3:]
 	update.postFioData(sensorId, carcount, voltage, temperature, window)
+	print "Sent fio data to server"
 
 # Takes a data stream from a Pi and sends it to the server for storage
 def parsePiDataAndSend(sensorId, dataStream):
@@ -87,18 +89,19 @@ def message_received(dataPacket):
 			processPiMessage(dataPacket)
 
 		elif hackyMethodToIdentifyData(sensorPayload) == "fio":
+			print "The packet was a fio packet"
 			processFioMessage(dataPacket)
 	
 	except Exception as e:
 		# The last steps will fail for messages such as on calibration, we need to catch this
-		pass	
+		pass
 
 def processPiMessage(dataPacket):
 
 	sensorId = getSensorId(dataPacket)
 
 	# Get the actual data payload we want to look at
-	sensorPayload = dataPacket["rf_data"]	
+	sensorPayload = dataPacket["rf_data"]
 
 	# Already received at least one packet for this sensor, so we will
 	# add this data to the existing value in the map
@@ -108,7 +111,7 @@ def processPiMessage(dataPacket):
 		if len(PI_DATA_BUFFER[sensorId]) < PI_STREAM_LENGTHS[sensorId]:
 			
 			# Append this payload to the end of the stream
-			PI_DATA_BUFFER[sensorId] += sensorPayLoad
+			PI_DATA_BUFFER[sensorId] += sensorPayload
 
 			# Check to see the new length. If it's >= the specified length,
 			# we know we have reached the end of the image stream
@@ -131,10 +134,15 @@ def processPiMessage(dataPacket):
 		PI_DATA_BUFFER[sensorId] = firstPacket
 		PI_STREAM_LENGTHS[sensorId] = streamLength
 
-
 def processFioMessage(dataPacket):
 
+	print "Processing Fio Packet"
 	sensorId = getSensorId(dataPacket)
+
+	parseFioDataAndSend(sensorId, dataPacket["rf_data"])
+
+	####### REMOVE FROM PRODUCTION CODE ##########
+	return
 
 	# Get the actual data payload we want to look at
 	sensorPayload = dataPacket["rf_data"]
@@ -175,21 +183,23 @@ def processFioMessage(dataPacket):
 			FIO_DATA_BUFFER[sensorId] = sensorPayload		
 
 def getSensorId(dataPacket):
-	# Grab hex string representing sensor id, it's given as a raw binary number
-	sensorIdHex = dataPacket["source_addr"]
+	return 1
+	# This is the right way to do things. The above line is only for testing
+	# # Grab hex string representing sensor id, it's given as a raw binary number
+	# sensorIdHex = dataPacket["source_addr"]
 
-	# Get the actual sensor id, and make sure that there is data to grab
-	sensorId = ord(sensorIdHex[0]) * 256 + ord(sensorIdHex[1])
+	# # Get the actual sensor id, and make sure that there is data to grab
+	# sensorId = ord(sensorIdHex[0]) * 256 + ord(sensorIdHex[1])
 
-	return sensorId
+	# return sensorId
 
 def hackyMethodToIdentifyData(sensorPayload):
 
-	print("Currently using hacky method. Please update as soon as possible. Let's not be lazy here. Seriously though. FIX IT!")
+	# print("Currently using hacky method. Please update as soon as possible. Let's not be lazy here. Seriously though. FIX IT!")
 
 	isFio = True
 	for char in sensorPayload.replace("<", ""):
-		if not (ord(char) == ord(' ') or ord(char) == ord('.') or ord(char) == ord('>') or (ord(char) in range(ord('0'), ord('9') + 1))):
+		if not (ord(char) == ord(' ') or ord(char) == ord('.') or ord(char) == ord('>') or ord(char) == ord('-') or (ord(char) in range(ord('0'), ord('9') + 1))):
 			isFio = False
 			break
 
@@ -204,17 +214,39 @@ def hackyMethodToIdentifyData(sensorPayload):
 # testPiStream = "102400 as;ofijw9r8uapw9erjas jdfzsdjf jawli,,.fhxfglq8uw3498ysf#R$**9hdfsaehrksdf;sfawr68569#$("
 # parsePiDataAndSend(3, testPiStream)
 
+
+##################################################################################################
+###################################### FIX THIS LATER ############################################
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+##################################################################################################
+
+# This part of the code currently only uses the serial port directly, instead of
+# actually making use of the XBee library. This is because we couldn't get the
+# XBee library working, so we just read raw serial data. This is not how we want
+# to do things when we get to production, but for demo purposes, it works.
+
 # Create API object, which spawns a new thread
-xbee = XBee(ser, callback=message_received)
+xbee = XBee(ser)
 
 print "Listening for input on serial port " + PORT
 
-# Do other stuff in the main thread
 while True:
-   try:
-       time.sleep(.1)
-   except KeyboardInterrupt:
-       break
+    try:
+   		dataPacket = {}
+   		dataPacket["rf_data"] = "<"
+   		byte = ""
+   		while byte != "<":
+   			byte = ser.read()
+   		while byte != ">":
+   			byte = ser.read()
+   			dataPacket["rf_data"] += byte
+   		message_received(dataPacket)
+    	# time.sleep(.1)
+    	# response = xbee.wait_read_frame()
+    	# print response
+    	# message_received(response)
+    except KeyboardInterrupt:
+    	break
 
 # halt() must be called before closing the serial
 # port in order to ensure proper thread shutdown
