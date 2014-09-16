@@ -76,6 +76,7 @@ then send the data in the map. The id will be removed from the map when the data
 The name of the map is FIO_DATA_BUFFER and exists in global scope.
 """
 
+
 def message_received(dataPacket):
 	print "Got a data packet"
 
@@ -84,65 +85,18 @@ def message_received(dataPacket):
 		
 		# Get the actual data payload we want to look at
 		sensorPayload = dataPacket["rf_data"]
-
-		if hackyMethodToIdentifyData(sensorPayload) == "pi":
-			processPiMessage(dataPacket)
-
-		elif hackyMethodToIdentifyData(sensorPayload) == "fio":
-			print "The packet was a fio packet"
-			processFioMessage(dataPacket)
+		processFioMessage(dataPacket)
 	
 	except Exception as e:
 		# The last steps will fail for messages such as on calibration, we need to catch this
 		pass
 
-def processPiMessage(dataPacket):
 
-	sensorId = getSensorId(dataPacket)
-
-	# Get the actual data payload we want to look at
-	sensorPayload = dataPacket["rf_data"]
-
-	# Already received at least one packet for this sensor, so we will
-	# add this data to the existing value in the map
-	if sensorId in PI_DATA_BUFFER:
-
-		# If the stream is still smaller than the specified length
-		if len(PI_DATA_BUFFER[sensorId]) < PI_STREAM_LENGTHS[sensorId]:
-			
-			# Append this payload to the end of the stream
-			PI_DATA_BUFFER[sensorId] += sensorPayload
-
-			# Check to see the new length. If it's >= the specified length,
-			# we know we have reached the end of the image stream
-			if len(PI_DATA_BUFFER[sensorId]) == PI_STREAM_LENGTHS[sensorId]:
-				parsePiDataAndSend(sensorId, PI_DATA_BUFFER[sensorId])
-				del PI_DATA_BUFFER[sensorId]
-
-			if len(PI_DATA_BUFFER[sensorId]) > PI_STREAM_LENGTHS[sensorId]:
-				print("Error: Sensor " + sensorId + " sent the wrong number of image packets")
-				exit()
-		
-		else:
-			print("Error: Sensor " + sensorId + " sent the wrong number of image packets")
-			exit()
-				
-	else:
-		streamLength = int(sensorPayload[0:sensorPayload.find(" ")])
-		firstPacket = sensorPayload[sensorPayload.find(" ") + 1:]
-
-		PI_DATA_BUFFER[sensorId] = firstPacket
-		PI_STREAM_LENGTHS[sensorId] = streamLength
 
 def processFioMessage(dataPacket):
 
 	print "Processing Fio Packet"
 	sensorId = getSensorId(dataPacket)
-
-	parseFioDataAndSend(sensorId, dataPacket["rf_data"])
-
-	####### REMOVE FROM PRODUCTION CODE ##########
-	return
 
 	# Get the actual data payload we want to look at
 	sensorPayload = dataPacket["rf_data"]
@@ -183,16 +137,42 @@ def processFioMessage(dataPacket):
 			FIO_DATA_BUFFER[sensorId] = sensorPayload		
 
 def getSensorId(dataPacket):
-	return 1
-	# This is the right way to do things. The above line is only for testing
 	# # Grab hex string representing sensor id, it's given as a raw binary number
-	# sensorIdHex = dataPacket["source_addr"]
+	sensorIdHex = dataPacket["source_addr"]
 
 	# # Get the actual sensor id, and make sure that there is data to grab
-	# sensorId = ord(sensorIdHex[0]) * 256 + ord(sensorIdHex[1])
+	sensorId = ord(sensorIdHex[0]) * 256 + ord(sensorIdHex[1])
 
-	# return sensorId
+	return sensorId
 
+
+xbee = XBee(ser, callback=message_receieved)
+while True:
+	try:
+		time.sleep(.1)
+	except KeyboardInterrupt:
+		break
+	
+xbee.halt()
+
+
+
+
+
+
+
+
+
+
+
+"""
+DEPREICATED FUNCTIONS:
+small reason for deprication is given on each function
+Most of them are a result of the parking project no longer being able to have a pi and fio at each sensor
+any code depericated for this reason was written by a wireless sensor network group in spring of 2014
+
+"""
+""" Depericated because there is no longer a need to differentiate between fio and pi packets
 def hackyMethodToIdentifyData(sensorPayload):
 
 	# print("Currently using hacky method. Please update as soon as possible. Let's not be lazy here. Seriously though. FIX IT!")
@@ -213,8 +193,73 @@ def hackyMethodToIdentifyData(sensorPayload):
 
 # testPiStream = "102400 as;ofijw9r8uapw9erjas jdfzsdjf jawli,,.fhxfglq8uw3498ysf#R$**9hdfsaehrksdf;sfawr68569#$("
 # parsePiDataAndSend(3, testPiStream)
+"""
+""" deprecated version of message_received. depericated because no longer need to differentiate between pi or fio packets
+def message_received(dataPacket):
+	print "Got a data packet"
+
+	print dataPacket
+	try :
+		
+		# Get the actual data payload we want to look at
+		sensorPayload = dataPacket["rf_data"]
+
+		if hackyMethodToIdentifyData(sensorPayload) == "pi":
+			processPiMessage(dataPacket)
+
+		elif hackyMethodToIdentifyData(sensorPayload) == "fio":
+			print "The packet was a fio packet"
+			processFioMessage(dataPacket)
+	
+	except Exception as e:
+		# The last steps will fail for messages such as on calibration, we need to catch this
+		pass
+
+"""
 
 
+"""Depreciated due to parking project not being able to install pi's with sensors
+def processPiMessage(dataPacket):
+
+	sensorId = getSensorId(dataPacket)
+
+	# Get the actual data payload we want to look at
+	sensorPayload = dataPacket["rf_data"]
+
+	# Already received at least one packet for this sensor, so we will
+	# add this data to the existing value in the map
+	if sensorId in PI_DATA_BUFFER:
+
+		# If the stream is still smaller than the specified length
+		if len(PI_DATA_BUFFER[sensorId]) < PI_STREAM_LENGTHS[sensorId]:
+			
+			# Append this payload to the end of the stream
+			PI_DATA_BUFFER[sensorId] += sensorPayload
+
+			# Check to see the new length. If it's >= the specified length,
+			# we know we have reached the end of the image stream
+			if len(PI_DATA_BUFFER[sensorId]) == PI_STREAM_LENGTHS[sensorId]:
+				parsePiDataAndSend(sensorId, PI_DATA_BUFFER[sensorId])
+				del PI_DATA_BUFFER[sensorId]
+
+			if len(PI_DATA_BUFFER[sensorId]) > PI_STREAM_LENGTHS[sensorId]:
+				print("Error: Sensor " + sensorId + " sent the wrong number of image packets")
+				exit()
+		
+		else:
+			print("Error: Sensor " + sensorId + " sent the wrong number of image packets")
+			exit()
+				
+	else:
+		streamLength = int(sensorPayload[0:sensorPayload.find(" ")])
+		firstPacket = sensorPayload[sensorPayload.find(" ") + 1:]
+
+		PI_DATA_BUFFER[sensorId] = firstPacket
+		PI_STREAM_LENGTHS[sensorId] = streamLength
+
+
+"""
+"""Depricated main loop: depricated because the wsn group is no longer working on this project and we do not need the debug statements
 ##################################################################################################
 ###################################### FIX THIS LATER ############################################
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -252,3 +297,4 @@ while True:
 # port in order to ensure proper thread shutdown
 xbee.halt()
 ser.close()
+"""

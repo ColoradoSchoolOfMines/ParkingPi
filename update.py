@@ -44,6 +44,25 @@ def postFioData(sensorID, carcount,  battery, temperature=None, window=None):
 	print r.text
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""Depricated, There is no reason to post pi data if there is no pi
 # This method will post an image to the ACMx server. It uses the 'requests'
 # module for Multipart-Encoding of the image file. See 
 # http://docs.python-requests.org/ for documentation. Prints server response
@@ -73,4 +92,4 @@ def postPiData(sensorID, image):
 	
 	# Print out the server's response.
 	print r.text
-
+"""
